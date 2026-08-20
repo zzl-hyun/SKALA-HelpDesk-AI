@@ -37,10 +37,10 @@ public class AdminTicketController {
         return ticketRepository.findPending();
     }
 
-    @PostMapping("/{no}/approve")
-    @Operation(summary = "환불 티켓 승인", description = "PENDING 상태의 티켓을 승인 처리한다.")
-    public Ticket approve(@PathVariable String no) {
-        return ticketRepository.approve(no)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "티켓을 찾을 수 없습니다: " + no));
+    @PostMapping("/{id}/approve")
+    @Operation(summary = "환불 티켓 승인", description = "PENDING 상태의 티켓을 승인 처리한다. id는 숫자(예: 1) — 응답 메시지의 'T-1'에서 숫자 부분이다.")
+    public Ticket approve(@PathVariable Long id) {
+        return ticketRepository.approve(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "티켓을 찾을 수 없습니다: " + id));
     }
 }

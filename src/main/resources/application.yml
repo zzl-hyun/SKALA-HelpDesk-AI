@@ -2,6 +2,24 @@ spring:
   application:
     name: assistant-agent
 
+  # H2 — 실습용. 앱 재시작하면 초기화되고 DataSeeder(CommandLineRunner)가 다시 씨딩한다.
+  datasource:
+    url: jdbc:h2:mem:helpdesk;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # 실습용 — 스키마를 Hibernate가 매번 새로 만든다.
+    open-in-view: false
+    show-sql: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console   # 브라우저에서 데이터 직접 확인용 — JDBC URL: jdbc:h2:mem:helpdesk
+
   ai:
     openai:
       # 키는 소스에 넣지 않는다.  export OPENAI_API_KEY="sk-..."

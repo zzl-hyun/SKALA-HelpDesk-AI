@@ -51,7 +51,7 @@ public class RefuntTool {
             registry.counter("ai.tool.calls", "tool", "requestRefund", "result", "ok").increment();
             log.info("[{}]   도구 requestRefund({}) {}ms",
                     MDC.get(Lab3ChatService.TRACE_ID), orderId, (System.nanoTime() - start) / 1_000_000);
-            return "환불이 접수되었습니다. 티켓 번호 %s, 담당자 승인 후 처리됩니다.".formatted(ticket.no());
+            return "환불이 접수되었습니다. 티켓 번호 T-%d, 담당자 승인 후 처리됩니다.".formatted(ticket.getId());
         } catch (RuntimeException e) {
             registry.counter("ai.tool.calls", "tool", "requestRefund", "result", "fail").increment();
             log.info("[{}]   도구 requestRefund({}) {}ms (실패)",
