@@ -72,4 +72,4 @@ tasks.named('test') {
     }
 }
 
-springBoot { mainClass = 'com.skala.ch03.AssistantApplication' }
+springBoot { mainClass = 'com.skala.helpdesk.HelpDeskApplication' }

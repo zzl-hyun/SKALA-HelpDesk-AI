@@ -1,6 +1,6 @@
 spring:
   application:
-    name: assistant-agent
+    name: helpdesk-agent
 
   # H2 — 실습용. 앱 재시작하면 초기화되고 DataSeeder(CommandLineRunner)가 다시 씨딩한다.
   datasource:
@@ -44,13 +44,15 @@ spring:
 server:
   port: 8080
 
-# Day 2 RAG 실험값. 환경 변수 하나만 바꾸고 다시 인제스트하면 조합을 비교할 수 있다.
-lab2:
+# RAG·메모리 실험값. 환경 변수 하나만 바꾸고 다시 인제스트하면 조합을 비교할 수 있다.
+helpdesk:
   rag:
-    chunk-size: ${LAB2_CHUNK_SIZE:400}
-    min-chunk-size-chars: ${LAB2_MIN_CHUNK_SIZE_CHARS:200}
-    top-k: ${LAB2_TOP_K:4}
-    similarity-threshold: ${LAB2_SIMILARITY_THRESHOLD:0.33}
+    chunk-size: ${HELPDESK_CHUNK_SIZE:400}
+    min-chunk-size-chars: ${HELPDESK_MIN_CHUNK_SIZE_CHARS:200}
+    top-k: ${HELPDESK_TOP_K:4}
+    similarity-threshold: ${HELPDESK_SIMILARITY_THRESHOLD:0.33}
+  memory:
+    max-messages: ${HELPDESK_MEMORY_MAX_MESSAGES:20}
 
 # ── API 문서 · Swagger UI ──────────────────────────────────
 #   화면 http://localhost:8080/swagger-ui.html   문서 /v3/api-docs
@@ -72,8 +74,8 @@ management:
         include: health,info,metrics,prometheus
   metrics:
     tags:
-      application: assistant-agent
+      application: helpdesk-agent
 
 logging:
   level:
-    com.skala.ch03: DEBUG
+    com.skala.helpdesk: DEBUG
