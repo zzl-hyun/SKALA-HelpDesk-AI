@@ -1,14 +1,25 @@
 package com.skala.ch03.config;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
+import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.skala.ch03.advisor.AuditAdvisor;
+import com.skala.ch03.advisor.SafetyAdvisor;
+import com.skala.ch03.advisor.TokenMeterAdvisor;
 import com.skala.ch03.tool.OrderTool;
+import com.skala.ch03.tool.RefuntTool;
 
 /**
  * 2장 — ChatClient 빈을 용도별로 나눠 만든다.
@@ -52,24 +63,60 @@ public class AgentConfig {
                                 .build();
         }
 
+        /** 3장 Step5 — 최근 N개 메시지만 유지되는 대화 이력. 실제 DB 대신 메모리 저장소를 쓴다(실습용). */
+        @Bean
+        public ChatMemoryRepository chatMemoryRepository() {
+                return new InMemoryChatMemoryRepository();
+        }
+
+        @Bean
+        public ChatMemory chatMemory(
+                        ChatMemoryRepository chatMemoryRepository,
+                        @Value("${lab3.memory.max-messages:20}") int maxMessages) {
+                return MessageWindowChatMemory.builder()
+                                .chatMemoryRepository(chatMemoryRepository)
+                                .maxMessages(maxMessages)
+                                .build();
+        }
+
         /**
-         * 3장 — 상담 에이전트. RAG는 Advisor로 붙여서 "근거가 있으면 참고"하게 하고,
-         * 없으면 (Day2 AssistantService처럼 아예 막지 않고) 모델이 스스로 도구를 부르거나
-         * 모른다고 답하도록 판단을 맡긴다.
+         * 3장 Step4 — 상담 에이전트. Advisor 순서가 곧 정책이다.
+         * order 0(감사) → 100(차단) → 200(기억) → 300(근거 검색) → 900(계측).
+         * 차단(100)이 기억(200)보다 앞에 있어야, 걸러진 입력이 대화 이력에 남지 않는다.
          */
         @Bean
-        public ChatClient lab3ChatClient(ChatClient.Builder builder, VectorStore vectorStore, OrderTool orderTool) {
+        public ChatClient lab3ChatClient(
+                        ChatClient.Builder builder, VectorStore vectorStore, ChatMemory chatMemory,
+                        OrderTool orderTool, RefuntTool refuntTool,
+                        AuditAdvisor auditAdvisor, SafetyAdvisor safetyAdvisor, TokenMeterAdvisor tokenMeterAdvisor,
+                        @Value("${lab2.rag.similarity-threshold:0.33}") double ragThreshold,
+                        @Value("${lab2.rag.top-k:4}") int ragTopK) {
                 return builder
                                 .defaultSystem("""
                                                 너는 사내 상담 에이전트다.
                                                 - 반품·배송 같은 정책 질문은 검색된 [문서] 근거로만 답하고, 근거가 없으면 모른다고 말한다.
                                                 - 주문 상태처럼 실시간 정보가 필요한 질문은 반드시 도구를 호출해서 답한다.
+                                                - 사용자가 환불·교환을 요청하면, 정책 문서에 불가하다는 내용이 있어도 네가 직접 거절하지 않는다.
+                                                  가능/불가 판단은 담당자의 몫이다 — requestRefund 도구를 호출해 접수만 하고,
+                                                  "접수되었고 담당자 승인 후 처리된다"고 안내한다. 즉시 처리된 것처럼 말하지 않는다.
+                                                - 주문번호나 사유를 이미 이전 대화에서 말했다면 다시 묻지 않고 그 값을 그대로 사용해 도구를 호출한다.
+                                                  정말로 대화 어디에도 없을 때만 되묻는다.
                                                 - 질문이 애매하면(예: 주문번호가 없으면) 되묻는다.
                                                 - 존댓말을 쓰고 간결하게 답한다.""")
                                 .defaultAdvisors(
-                                                QuestionAnswerAdvisor.builder(vectorStore).build(),
+                                                auditAdvisor, // order 0   가장 바깥
+                                                safetyAdvisor, // order 100 차단
+                                                MessageChatMemoryAdvisor.builder(chatMemory).order(200).build(), // order 200 기억
+                                                QuestionAnswerAdvisor.builder(vectorStore)
+                                                                .order(300) // 근거 검색
+                                                                .searchRequest(SearchRequest.builder()
+                                                                                .topK(ragTopK)
+                                                                                .similarityThreshold(ragThreshold)
+                                                                                .build())
+                                                                .build(),
+                                                tokenMeterAdvisor, // order 900 계측
                                                 new SimpleLoggerAdvisor())
-                                .defaultTools(orderTool)
+                                .defaultTools(orderTool, refuntTool)
                                 .build();
         }
 }
