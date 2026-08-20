@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.skala.ch03.handler.exception.OrderNotFoundException;
+import com.skala.ch03.handler.exception.UnsafeInputException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -20,6 +21,13 @@ public class GlobalExceptionHandler {
             OrderNotFoundException exception,
             HttpServletRequest request) {
         return errorResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(UnsafeInputException.class)
+    public ResponseEntity<ErrorResponse> handleUnsafeInput(
+            UnsafeInputException exception,
+            HttpServletRequest request) {
+        return errorResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
     }
 
     private static ResponseEntity<ErrorResponse> errorResponse(

@@ -1,5 +1,8 @@
 package com.skala.ch03.tool;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
@@ -8,23 +11,47 @@ import org.springframework.stereotype.Component;
 import com.skala.ch03.domain.Order;
 import com.skala.ch03.handler.exception.OrderNotFoundException;
 import com.skala.ch03.repository.OrderRepository;
+import com.skala.ch03.service.Lab3ChatService;
+
+import io.micrometer.core.instrument.MeterRegistry;
 
 @Component
 public class OrderTool {
-    private final OrderRepository orderRepository;
 
-    public OrderTool(OrderRepository orderRepository) {
+    private static final Logger log = LoggerFactory.getLogger("METRICS");
+
+    private final OrderRepository orderRepository;
+    private final MeterRegistry registry;
+
+    public OrderTool(OrderRepository orderRepository, MeterRegistry registry) {
         this.orderRepository = orderRepository;
+        this.registry = registry;
     }
 
-    @Tool(description = "주문 상태를 확인하는 도구")
+    @Tool(description = """
+            주문 상태를 조회한다. 사용자가 주문번호를 말하거나 '내 주문', '배송 언제' 처럼 물으면 이 도구를 쓴다.
+            """)
     public Order getOrder(
             @ToolParam(description = "주문 ID") String orderId,
             ToolContext ctx) {
 
         String userId = (String) ctx.getContext().get("userId");
-        return orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        long start = System.nanoTime();
+        try {
+            Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                    .orElseThrow(() -> new OrderNotFoundException(orderId));
+            registry.counter("ai.tool.calls", "tool", "getOrder", "result", "ok").increment();
+            logCall(orderId, System.nanoTime() - start);
+            return order;
+        } catch (RuntimeException e) {
+            registry.counter("ai.tool.calls", "tool", "getOrder", "result", "fail").increment();
+            logCall(orderId, System.nanoTime() - start);
+            throw e;
+        }
     }
 
+    private static void logCall(String orderId, long elapsedNanos) {
+        log.info("[{}]   도구 getOrder({}) {}ms",
+                MDC.get(Lab3ChatService.TRACE_ID), orderId, elapsedNanos / 1_000_000);
+    }
 }
