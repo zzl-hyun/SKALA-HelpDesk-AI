@@ -15,12 +15,11 @@ public class InMemoryOrderRepository implements OrderRepository {
     private final Map<String, Order> orders = Map.of(
             "12345", new Order("12345", "user-1", "무선 이어폰", OrderStatus.SHIPPING, "2026-08-20"),
 
-            "99999", new Order("99999", "user-2", "노트북 거치대", OrderStatus.DELIVERED, "2026-08-15")
-    );
+            "99999", new Order("99999", "user-2", "노트북 거치대", OrderStatus.DELIVERED, "2026-08-15"));
 
     @Override
-    public Optional<Order> findByIdAndOwnerId(String orderId, String ownerId) {
+    public Optional<Order> findByIdAndUserId(String orderId, String userId) {
         return Optional.ofNullable(orders.get(orderId))
-                .filter(order -> order.ownerId().equals(ownerId));
+                .filter(order -> order.userId().equals(userId));
     }
 }

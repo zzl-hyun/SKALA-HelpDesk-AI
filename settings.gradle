@@ -7,4 +7,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'ch03_chatclient'
+rootProject.name = 'assistant-agent'

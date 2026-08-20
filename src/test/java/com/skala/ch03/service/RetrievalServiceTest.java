@@ -16,7 +16,10 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 
-class Lab2RetrievalServiceTest {
+import com.skala.ch03.rag.ContextChunk;
+import com.skala.ch03.rag.RetrievalService;
+
+class RetrievalServiceTest {
 
     @Test
     void returnsSourceScoreAndFullChunk() {
@@ -28,11 +31,11 @@ class Lab2RetrievalServiceTest {
                 .score(0.82)
                 .build();
         when(vectorStore.similaritySearch(any(SearchRequest.class))).thenReturn(List.of(document));
-        var service = new Lab2RetrievalService(vectorStore, 4, 0.5);
+        var service = new RetrievalService(vectorStore, 4, 0.5);
 
-        List<RetrievedChunk> result = service.retrieve("반품 기한");
+        List<ContextChunk> result = service.retrieve("반품 기한");
 
-        assertThat(result).containsExactly(new RetrievedChunk("return-policy", 0.82, fullText));
+        assertThat(result).containsExactly(new ContextChunk("return-policy", 0.82, fullText));
         ArgumentCaptor<SearchRequest> requestCaptor = ArgumentCaptor.forClass(SearchRequest.class);
         verify(vectorStore).similaritySearch(requestCaptor.capture());
         assertThat(requestCaptor.getValue().getTopK()).isEqualTo(4);
@@ -42,7 +45,7 @@ class Lab2RetrievalServiceTest {
     @Test
     void rejectsInvalidQuestionAndTopKBeforeEmbeddingCall() {
         VectorStore vectorStore = mock(VectorStore.class);
-        var service = new Lab2RetrievalService(vectorStore, 4, 0.5);
+        var service = new RetrievalService(vectorStore, 4, 0.5);
 
         assertThatThrownBy(() -> service.retrieve("  "))
                 .isInstanceOf(IllegalArgumentException.class);

@@ -43,6 +43,8 @@ dependencies {
 
     // ── 테스트 ─────────────────────────────────────────────────
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 dependencyManagement {
@@ -66,4 +68,4 @@ tasks.named('test') {
     }
 }
 
-springBoot { mainClass = 'com.skala.ch03.Ch03Application' }
+springBoot { mainClass = 'com.skala.ch03.AssistantApplication' }

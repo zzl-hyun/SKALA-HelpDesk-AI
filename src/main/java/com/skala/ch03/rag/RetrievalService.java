@@ -1,4 +1,4 @@
-package com.skala.ch03.service;
+package com.skala.ch03.rag;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Lab2RetrievalService {
+public class RetrievalService {
 
     private final VectorStore vectorStore;
     private final int defaultTopK;
     private final double similarityThreshold;
 
-    public Lab2RetrievalService(
+    public RetrievalService(
             VectorStore vectorStore,
             @Value("${lab2.rag.top-k:4}") int defaultTopK,
             @Value("${lab2.rag.similarity-threshold:0.5}") double similarityThreshold) {
@@ -23,11 +23,11 @@ public class Lab2RetrievalService {
         this.similarityThreshold = similarityThreshold;
     }
 
-    public List<RetrievedChunk> retrieve(String question) {
+    public List<ContextChunk> retrieve(String question) {
         return retrieve(question, defaultTopK);
     }
 
-    public List<RetrievedChunk> retrieve(String question, int topK) {
+    public List<ContextChunk> retrieve(String question, int topK) {
         if (question == null || question.isBlank()) {
             throw new IllegalArgumentException("질문은 비어 있을 수 없습니다.");
         }
@@ -36,12 +36,12 @@ public class Lab2RetrievalService {
         }
 
         return vectorStore.similaritySearch(SearchRequest.builder()
-                        .query(question)
-                        .topK(topK)
-                        .similarityThreshold(similarityThreshold)
-                        .build())
+                .query(question)
+                .topK(topK)
+                .similarityThreshold(similarityThreshold)
+                .build())
                 .stream()
-                .map(document -> new RetrievedChunk(
+                .map(document -> new ContextChunk(
                         String.valueOf(document.getMetadata().get("source")),
                         document.getScore(),
                         document.getText()))

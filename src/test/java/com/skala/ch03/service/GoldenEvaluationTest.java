@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,18 +17,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skala.ch03.dto.ChatResponse;
+import com.skala.ch03.rag.DocumentService;
+
 @Tag("eval")
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class Lab2GoldenEvaluationTest {
+class GoldenEvaluationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(Lab2GoldenEvaluationTest.class);
-
-    @Autowired
-    private Lab2IngestService ingestService;
+    private static final Logger log = LoggerFactory.getLogger(GoldenEvaluationTest.class);
 
     @Autowired
-    private Lab2QuestionAnswerService questionAnswerService;
+    private DocumentService ingestService;
+
+    @Autowired
+    private AssistantService questionAnswerService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -58,7 +61,7 @@ class Lab2GoldenEvaluationTest {
         int pass = 0;
 
         for (Golden expected : golden) {
-            AnswerDto actual = questionAnswerService.ask(expected.q());
+            ChatResponse actual = questionAnswerService.ask(expected.q());
 
             boolean hasRequiredWords = expected.must().stream()
                     .allMatch(keyword -> actual.answer().contains(keyword));
@@ -79,7 +82,7 @@ class Lab2GoldenEvaluationTest {
     }
 
     private List<Golden> readGoldenSet() throws IOException {
-        var resource = new ClassPathResource("lab2/golden.json");
+        var resource = new ClassPathResource("knowledge/golden.json");
         try (InputStream input = resource.getInputStream()) {
             return objectMapper.readValue(input, new TypeReference<>() {
             });

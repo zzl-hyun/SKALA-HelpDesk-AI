@@ -16,12 +16,14 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.core.io.ByteArrayResource;
 
-class Lab2IngestServiceTest {
+import com.skala.ch03.rag.DocumentService;
+
+class DocumentServiceTest {
 
     @Test
     void replacesSameSourceAndKeepsMetadata() {
         VectorStore vectorStore = mock(VectorStore.class);
-        var service = new Lab2IngestService(vectorStore, 400, 200);
+        var service = new DocumentService(vectorStore, 400, 200);
         var resource = new ByteArrayResource(
                 "단순 변심 반품은 7일 이내 가능합니다.".getBytes(StandardCharsets.UTF_8));
 

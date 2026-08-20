@@ -4,10 +4,17 @@
   "configurations": [
     {
       "type": "java",
-      "name": "ch03_chatclient (셸 환경변수)",
+      "name": "AssistantApplication",
       "request": "launch",
-      "mainClass": "com.skala.ch03.Ch03Application",
-      "projectName": "ch03_chatclient",
+      "mainClass": "com.skala.ch03.AssistantApplication",
+      "projectName": "skala-spring-ai"
+    },
+    {
+      "type": "java",
+      "name": "assistant-agent (셸 환경변수)",
+      "request": "launch",
+      "mainClass": "com.skala.ch03.AssistantApplication",
+      "projectName": "assistant-agent",
       "vmArgs": "-Dfile.encoding=UTF-8",
       "env": {
         "OPENAI_API_KEY": "${env:OPENAI_API_KEY}"
@@ -15,10 +22,10 @@
     },
     {
       "type": "java",
-      "name": "ch03_chatclient (.env)",
+      "name": "assistant-agent (.env)",
       "request": "launch",
-      "mainClass": "com.skala.ch03.Ch03Application",
-      "projectName": "ch03_chatclient",
+      "mainClass": "com.skala.ch03.AssistantApplication",
+      "projectName": "assistant-agent",
       "vmArgs": "-Dfile.encoding=UTF-8",
       "envFile": "${workspaceFolder}/.env"
     }

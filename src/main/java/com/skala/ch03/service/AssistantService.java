@@ -3,6 +3,7 @@ package com.skala.ch03.service;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -11,23 +12,36 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.skala.ch03.dto.ChatResponse;
+import com.skala.ch03.rag.ContextChunk;
+import com.skala.ch03.rag.RetrievalService;
+import com.skala.ch03.tool.OrderTool;
+
 @Service
-public class Lab2QuestionAnswerService {
+public class AssistantService {
 
     private static final String UNKNOWN_PHRASE = "확인되지";
 
-    private final Lab2RetrievalService retrievalService;
+    private final RetrievalService retrievalService;
     private final ChatClient chatClient;
+    private final OrderTool orderTool;
 
-    public Lab2QuestionAnswerService(
-            Lab2RetrievalService retrievalService,
-            @Qualifier("extractClient") ChatClient chatClient) {
+    public AssistantService(
+            RetrievalService retrievalService,
+            @Qualifier("extractClient") ChatClient chatClient,
+            OrderTool orderTool) {
         this.retrievalService = retrievalService;
         this.chatClient = chatClient;
+        this.orderTool = orderTool;
     }
 
-    public AnswerDto ask(String question) {
-        final List<RetrievedChunk> chunks;
+    /**
+     *
+     * @param question
+     * @return
+     */
+    public ChatResponse ask(String question, String userId) {
+        final List<ContextChunk> chunks;
         try {
             chunks = retrievalService.retrieve(question);
         } catch (IllegalArgumentException e) {
@@ -36,10 +50,10 @@ public class Lab2QuestionAnswerService {
 
         // 검색된 근거가 하나도 없으면 생성 모델을 호출하지 않는다.
         if (chunks.isEmpty()) {
-            return AnswerDto.unknown();
+            return ChatResponse.unknown();
         }
 
-        final AnswerDto generated;
+        final ChatResponse generated;
         try {
             generated = chatClient.prompt()
                     .system("""
@@ -58,8 +72,10 @@ public class Lab2QuestionAnswerService {
                             """)
                             .param("context", format(chunks))
                             .param("question", question))
+                    .tools(orderTool)
+                    .toolContext(Map.of("userId", userId))
                     .call()
-                    .entity(AnswerDto.class);
+                    .entity(ChatResponse.class);
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스 호출에 실패했습니다.", e);
         }
@@ -67,9 +83,9 @@ public class Lab2QuestionAnswerService {
         return validateGrounding(generated, chunks);
     }
 
-    private static String format(List<RetrievedChunk> chunks) {
+    private static String format(List<ContextChunk> chunks) {
         StringBuilder context = new StringBuilder();
-        for (RetrievedChunk chunk : chunks) {
+        for (ContextChunk chunk : chunks) {
             context.append("[source=")
                     .append(chunk.source())
                     .append("]\n")
@@ -80,18 +96,18 @@ public class Lab2QuestionAnswerService {
     }
 
     /** 모델이 검색되지 않은 출처를 만들어 내면 응답 단계에서 제거한다. */
-    static AnswerDto validateGrounding(AnswerDto generated, List<RetrievedChunk> chunks) {
+    static ChatResponse validateGrounding(ChatResponse generated, List<ContextChunk> chunks) {
         if (generated == null || generated.answer() == null || generated.answer().isBlank()) {
-            return AnswerDto.unknown();
+            return ChatResponse.unknown();
         }
 
         boolean unknown = generated.answer().contains(UNKNOWN_PHRASE);
         if (unknown || !generated.grounded()) {
-            return AnswerDto.unknown();
+            return ChatResponse.unknown();
         }
 
         Set<String> availableSources = new LinkedHashSet<>();
-        chunks.stream().map(RetrievedChunk::source).forEach(availableSources::add);
+        chunks.stream().map(ContextChunk::source).forEach(availableSources::add);
 
         List<String> verifiedSources = generated.sources() == null
                 ? List.of()
@@ -103,10 +119,10 @@ public class Lab2QuestionAnswerService {
 
         // 출처 없는 답을 근거 있는 답으로 내보내지 않는다.
         if (verifiedSources.isEmpty()) {
-            return AnswerDto.unknown();
+            return ChatResponse.unknown();
         }
 
-        return new AnswerDto(generated.answer(), verifiedSources, true);
+        return new ChatResponse(generated.answer(), verifiedSources, true);
     }
 
     private static String canonicalSource(String candidate, Set<String> availableSources) {
