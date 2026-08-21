@@ -10,8 +10,7 @@ import jakarta.persistence.Table;
 @Table(name = "orders")
 public class Order {
 
-    @Id
-    private String id;
+    @Id private String id;
 
     private String userId;
     private String item;

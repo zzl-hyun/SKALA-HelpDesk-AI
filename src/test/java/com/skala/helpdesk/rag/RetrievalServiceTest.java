@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ai.document.Document;
@@ -22,11 +21,12 @@ class RetrievalServiceTest {
     void returnsSourceScoreAndFullChunk() {
         VectorStore vectorStore = mock(VectorStore.class);
         String fullText = "가".repeat(150);
-        Document document = Document.builder()
-                .text(fullText)
-                .metadata(Map.of("source", "return-policy"))
-                .score(0.82)
-                .build();
+        Document document =
+                Document.builder()
+                        .text(fullText)
+                        .metadata(Map.of("source", "return-policy"))
+                        .score(0.82)
+                        .build();
         when(vectorStore.similaritySearch(any(SearchRequest.class))).thenReturn(List.of(document));
         var service = new RetrievalService(vectorStore, 4, 0.5);
 

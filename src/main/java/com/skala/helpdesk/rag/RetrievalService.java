@@ -1,7 +1,6 @@
 package com.skala.helpdesk.rag;
 
 import java.util.List;
-
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,16 +34,20 @@ public class RetrievalService {
             throw new IllegalArgumentException("topK는 1 이상 20 이하여야 합니다.");
         }
 
-        return vectorStore.similaritySearch(SearchRequest.builder()
-                .query(question)
-                .topK(topK)
-                .similarityThreshold(similarityThreshold)
-                .build())
+        return vectorStore
+                .similaritySearch(
+                        SearchRequest.builder()
+                                .query(question)
+                                .topK(topK)
+                                .similarityThreshold(similarityThreshold)
+                                .build())
                 .stream()
-                .map(document -> new ContextChunk(
-                        String.valueOf(document.getMetadata().get("source")),
-                        document.getScore(),
-                        document.getText()))
+                .map(
+                        document ->
+                                new ContextChunk(
+                                        String.valueOf(document.getMetadata().get("source")),
+                                        document.getScore(),
+                                        document.getText()))
                 .toList();
     }
 }
