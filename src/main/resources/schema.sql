@@ -1,9 +1,0 @@
-DROP TABLE IF EXISTS orders;
-
-CREATE TABLE orders (
-    id BIGINT NOT NULL PRIMARY KEY,
-    owner_id BIGINT NOT NULL,
-    item VARCHAR(255) NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    eta VARCHAR(100)
-);
