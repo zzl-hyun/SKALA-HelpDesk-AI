@@ -1,9 +1,9 @@
 package com.skala.helpdesk.chat;
 
+import com.skala.helpdesk.handler.exception.UnsafeInputException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import org.slf4j.MDC;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClientResponse;
@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.skala.helpdesk.handler.exception.UnsafeInputException;
-
 @Service
 public class HelpDeskService {
 
@@ -27,8 +25,8 @@ public class HelpDeskService {
     }
 
     /**
-     * 대화 ID 규칙을 만드는 곳은 여기 한 곳뿐이어야 한다 — 흩어지면 남의 대화가 섞이는 사고가 난다.
-     * Controller의 history() 조회도 반드시 이 메서드를 통해서만 conversationId를 만들어야 한다.
+     * 대화 ID 규칙을 만드는 곳은 여기 한 곳뿐이어야 한다 — 흩어지면 남의 대화가 섞이는 사고가 난다. Controller의 history() 조회도 반드시 이 메서드를
+     * 통해서만 conversationId를 만들어야 한다.
      */
     public static String conversationId(String userId, String sessionId) {
         String session = (sessionId == null || sessionId.isBlank()) ? "default" : sessionId;
@@ -42,14 +40,20 @@ public class HelpDeskService {
         String conversationId = conversationId(userId, sessionId);
         MDC.put(TRACE_ID, UUID.randomUUID().toString().substring(0, 8));
         try {
-            ChatClientResponse response = helpDeskChatClient.prompt()
-                    .user(question)
-                    .advisors(a -> a
-                            .param(ChatMemory.CONVERSATION_ID, conversationId)
-                            .param("userId", userId)) // AuditAdvisor 등 advisor 체인에서 쓰는 값 — toolContext와는 별도 통로다.
-                    .toolContext(Map.of("userId", userId))
-                    .call()
-                    .chatClientResponse();
+            ChatClientResponse response =
+                    helpDeskChatClient
+                            .prompt()
+                            .user(question)
+                            .advisors(
+                                    a ->
+                                            a.param(ChatMemory.CONVERSATION_ID, conversationId)
+                                                    .param(
+                                                            "userId",
+                                                            userId)) // AuditAdvisor 등 advisor 체인에서
+                            // 쓰는 값 — toolContext와는 별도 통로다.
+                            .toolContext(Map.of("userId", userId))
+                            .call()
+                            .chatClientResponse();
 
             String answer = response.chatResponse().getResult().getOutput().getText();
             List<String> sources = extractSources(response);
@@ -57,7 +61,8 @@ public class HelpDeskService {
         } catch (UnsafeInputException e) {
             throw e;
         } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스 호출에 실패했습니다.", e);
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE, "AI 서비스 호출에 실패했습니다.", e);
         } finally {
             MDC.remove(TRACE_ID);
         }
@@ -70,9 +75,10 @@ public class HelpDeskService {
         if (!(retrieved instanceof List<?> documents)) {
             return List.of();
         }
-        return ((List<Document>) documents).stream()
-                .map(document -> String.valueOf(document.getMetadata().get("source")))
-                .distinct()
-                .toList();
+        return ((List<Document>) documents)
+                .stream()
+                        .map(document -> String.valueOf(document.getMetadata().get("source")))
+                        .distinct()
+                        .toList();
     }
 }

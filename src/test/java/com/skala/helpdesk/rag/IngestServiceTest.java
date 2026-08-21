@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -22,8 +21,8 @@ class IngestServiceTest {
     void replacesSameSourceAndKeepsMetadata() {
         VectorStore vectorStore = mock(VectorStore.class);
         var service = new IngestService(vectorStore, 400, 200);
-        var resource = new ByteArrayResource(
-                "단순 변심 반품은 7일 이내 가능합니다.".getBytes(StandardCharsets.UTF_8));
+        var resource =
+                new ByteArrayResource("단순 변심 반품은 7일 이내 가능합니다.".getBytes(StandardCharsets.UTF_8));
 
         var result = service.ingest(resource, "return-policy", "1.0");
 
@@ -35,9 +34,13 @@ class IngestServiceTest {
 
         assertThat(result.source()).isEqualTo("return-policy");
         assertThat(result.chunks()).isEqualTo(1);
-        assertThat(chunksCaptor.getValue()).singleElement().satisfies(chunk -> {
-            assertThat(chunk.getMetadata()).containsEntry("source", "return-policy");
-            assertThat(chunk.getMetadata()).containsEntry("version", "1.0");
-        });
+        assertThat(chunksCaptor.getValue())
+                .singleElement()
+                .satisfies(
+                        chunk -> {
+                            assertThat(chunk.getMetadata())
+                                    .containsEntry("source", "return-policy");
+                            assertThat(chunk.getMetadata()).containsEntry("version", "1.0");
+                        });
     }
 }

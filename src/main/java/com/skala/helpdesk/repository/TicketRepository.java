@@ -1,12 +1,10 @@
 package com.skala.helpdesk.repository;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.skala.helpdesk.domain.Ticket;
 import com.skala.helpdesk.domain.TicketStatus;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
@@ -19,10 +17,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     /** 담당자가 승인 버튼을 눌렀을 때만 호출된다 — 모델은 이 메서드에 닿지 않는다. */
     default Optional<Ticket> approve(Long id) {
-        return findById(id).map(ticket -> {
-            ticket.approve();
-            return save(ticket);
-        });
+        return findById(id)
+                .map(
+                        ticket -> {
+                            ticket.approve();
+                            return save(ticket);
+                        });
     }
 
     default List<Ticket> findPending() {

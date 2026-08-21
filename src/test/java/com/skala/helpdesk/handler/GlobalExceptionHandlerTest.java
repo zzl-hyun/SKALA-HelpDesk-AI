@@ -2,11 +2,10 @@ package com.skala.helpdesk.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.skala.helpdesk.handler.exception.OrderNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import com.skala.helpdesk.handler.exception.OrderNotFoundException;
 
 class GlobalExceptionHandlerTest {
 
@@ -16,9 +15,7 @@ class GlobalExceptionHandlerTest {
     void mapsOrderNotFoundToConsistentNotFoundResponse() {
         var request = new MockHttpServletRequest("GET", "/api/orders/99999");
 
-        var response = handler.handleOrderNotFound(
-                new OrderNotFoundException("99999"),
-                request);
+        var response = handler.handleOrderNotFound(new OrderNotFoundException("99999"), request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
