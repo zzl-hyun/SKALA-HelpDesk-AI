@@ -1,6 +1,6 @@
 package com.skala.helpdesk.advisor;
 
-import com.skala.helpdesk.chat.HelpDeskService;
+import com.skala.helpdesk.service.HelpDeskService;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -13,10 +13,7 @@ import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.stereotype.Component;
 
-/**
- * order 900
-
- */
+/** order 900 */
 @Component
 public class TokenMeterAdvisor implements BaseAdvisor {
 

@@ -1,9 +1,10 @@
-package com.skala.helpdesk.web;
+package com.skala.helpdesk.api.chat.controller;
 
-import com.skala.helpdesk.chat.AnswerDto;
-import com.skala.helpdesk.chat.HelpDeskService;
-import com.skala.helpdesk.chat.MessageView;
-import com.skala.helpdesk.web.api.ChatApi;
+import com.skala.helpdesk.api.chat.apispec.ChatApi;
+import com.skala.helpdesk.api.chat.request.AskRequest;
+import com.skala.helpdesk.api.chat.response.AnswerDto;
+import com.skala.helpdesk.api.chat.response.MessageView;
+import com.skala.helpdesk.service.HelpDeskService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemory;

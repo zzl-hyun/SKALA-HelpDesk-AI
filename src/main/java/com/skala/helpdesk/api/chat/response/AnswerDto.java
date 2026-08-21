@@ -1,4 +1,4 @@
-package com.skala.helpdesk.chat;
+package com.skala.helpdesk.api.chat.response;
 
 import java.util.List;
 

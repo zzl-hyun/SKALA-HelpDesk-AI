@@ -1,9 +1,9 @@
 package com.skala.helpdesk.tools;
 
-import com.skala.helpdesk.chat.HelpDeskService;
 import com.skala.helpdesk.domain.Order;
 import com.skala.helpdesk.handler.exception.OrderNotFoundException;
 import com.skala.helpdesk.repository.OrderRepository;
+import com.skala.helpdesk.service.HelpDeskService;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

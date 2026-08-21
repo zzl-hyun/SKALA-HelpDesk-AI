@@ -1,4 +1,4 @@
-package com.skala.helpdesk.web.api;
+package com.skala.helpdesk.api.admin.apispec;
 
 import com.skala.helpdesk.domain.Ticket;
 import com.skala.helpdesk.rag.IngestService.IngestResult;
@@ -21,9 +21,7 @@ public interface AdminApi {
     List<Ticket> pending();
 
     @PostMapping("/tickets/{id}/approve")
-    @Operation(
-            summary = "환불 티켓 승인",
-            description = "PENDING 상태의 티켓을 승인 처리한다. id는 숫자(예: 1) — 응답 메시지의 'T-1'에서 숫자 부분이다.")
+    @Operation(summary = "환불 티켓 승인", description = "티켓 번호의 숫자 부분으로 승인 처리한다.")
     Ticket approve(@PathVariable Long id);
 
     @PostMapping("/ingest")
@@ -31,6 +29,6 @@ public interface AdminApi {
     List<IngestResult> ingest();
 
     @GetMapping("/chunks")
-    @Operation(summary = "검색 결과와 유사도 확인", description = "무엇이 검색되는지 눈으로 본다 — 인제스트 품질을 여기서 먼저 잡는다.")
+    @Operation(summary = "검색 결과와 유사도 확인", description = "무엇이 검색되는지 확인한다.")
     List<SearchResult> chunks(@RequestParam String q, @RequestParam(required = false) Integer topK);
 }

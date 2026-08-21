@@ -1,12 +1,12 @@
-package com.skala.helpdesk.web;
+package com.skala.helpdesk.api.admin.controller;
 
+import com.skala.helpdesk.api.admin.apispec.AdminApi;
 import com.skala.helpdesk.domain.Ticket;
 import com.skala.helpdesk.rag.IngestService;
 import com.skala.helpdesk.rag.IngestService.IngestResult;
 import com.skala.helpdesk.rag.RetrievalService;
 import com.skala.helpdesk.rag.SearchResult;
 import com.skala.helpdesk.repository.TicketRepository;
-import com.skala.helpdesk.web.api.AdminApi;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

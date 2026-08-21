@@ -1,6 +1,6 @@
 package com.skala.helpdesk.advisor;
 
-import com.skala.helpdesk.chat.HelpDeskService;
+import com.skala.helpdesk.service.HelpDeskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -9,7 +9,6 @@ import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.AdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class AuditAdvisor implements BaseAdvisor {
