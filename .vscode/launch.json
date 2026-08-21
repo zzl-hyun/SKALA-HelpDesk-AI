@@ -1,5 +1,4 @@
 {
-  // F5 로 실행·디버그한다.
   "version": "0.2.0",
   "configurations": [
     {

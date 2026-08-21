@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** 상담 API의 HTTP 매핑과 OpenAPI 문서 계약. */
-@Tag(name = "HelpDesk · 상담 에이전트")
+@Tag(name = "HelpDesk 상담 에이전트")
 @RequestMapping("/api")
 public interface ChatApi {
 

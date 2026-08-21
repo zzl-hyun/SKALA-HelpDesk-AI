@@ -35,7 +35,7 @@ public class TicketTools {
     @Tool(
             description =
                     """
-            환불을 접수한다. 사용자가 환불·반품·교환을 요청하면 이 도구를 호출한다.
+            환불을 접수한다. 사용자가 환불 및 반품교환을 요청하면 이 도구를 호출한다.
             즉시 처리되지 않고 담당자 승인 후 처리된다 — 가능/불가 여부를 네가 미리 판단해서 거절하지 않는다.
             """)
     public String requestRefund(

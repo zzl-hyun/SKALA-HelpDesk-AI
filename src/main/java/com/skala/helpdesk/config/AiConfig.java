@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AiConfig {
 
-    /** 분류·추출 — 같은 입력이면 같은 출력이어야 하는 일. */
+//     분류 및 추출
     @Bean
     public ChatClient extractClient(ChatClient.Builder builder) {
         return builder.defaultSystem(
@@ -42,7 +42,7 @@ public class AiConfig {
                 .build();
     }
 
-    /** 상담·작문 — 자연스러움이 중요한 일. */
+//     챗봇
     @Bean
     public ChatClient supportClient(ChatClient.Builder builder) {
         return builder.defaultSystem(
@@ -55,7 +55,7 @@ public class AiConfig {
                 .build();
     }
 
-    /** 3장 Step5 — 최근 N개 메시지만 유지되는 대화 이력. 실제 DB 대신 메모리 저장소를 쓴다(실습용). */
+//     대화 컨텍스트
     @Bean
     public ChatMemoryRepository chatMemoryRepository() {
         return new InMemoryChatMemoryRepository();
@@ -71,10 +71,7 @@ public class AiConfig {
                 .build();
     }
 
-    /**
-     * 3장 Step4 — 상담 에이전트. Advisor 순서가 곧 정책이다. order 0(감사) → 100(차단) → 200(기억) → 300(근거 검색) →
-     * 900(계측). 차단(100)이 기억(200)보다 앞에 있어야, 걸러진 입력이 대화 이력에 남지 않는다.
-     */
+//     Advisor
     @Bean
     public ChatClient helpDeskChatClient(
             ChatClient.Builder builder,
@@ -90,9 +87,9 @@ public class AiConfig {
         return builder.defaultSystem(
                         """
                                                 너는 사내 상담 에이전트다.
-                                                - 반품·배송 같은 정책 질문은 검색된 [문서] 근거로만 답하고, 근거가 없으면 모른다고 말한다.
+                                                - 반품배송 같은 정책 질문은 검색된 [문서] 근거로만 답하고, 근거가 없으면 모른다고 말한다.
                                                 - 주문 상태처럼 실시간 정보가 필요한 질문은 반드시 도구를 호출해서 답한다.
-                                                - 사용자가 환불·교환을 요청하면, 정책 문서에 불가하다는 내용이 있어도 네가 직접 거절하지 않는다.
+                                                - 사용자가 환불교환을 요청하면, 정책 문서에 불가하다는 내용이 있어도 네가 직접 거절하지 않는다.
                                                   가능/불가 판단은 담당자의 몫이다 — requestRefund 도구를 호출해 접수만 하고,
                                                   "접수되었고 담당자 승인 후 처리된다"고 안내한다. 즉시 처리된 것처럼 말하지 않는다.
                                                 - 주문번호나 사유를 이미 이전 대화에서 말했다면 다시 묻지 않고 그 값을 그대로 사용해 도구를 호출한다.

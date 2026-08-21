@@ -12,32 +12,28 @@ java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
-// 편집기·OS 가 달라도 한글 주석·프롬프트가 깨지지 않게 인코딩을 고정한다.
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 tasks.withType(Test).configureEach { systemProperty 'file.encoding', 'UTF-8' }
 tasks.named('bootRun') { jvmArgs = ['-Dfile.encoding=UTF-8'] }
 
 repositories {
-    // Maven Central 이 429(Too Many Requests)를 내릴 때를 대비해 구글 미러를 우선 시도
     maven { url 'https://maven-central.storage-download.googleapis.com/maven2/' }
     mavenCentral()
 }
 
-// 교재 4장 — 용도별 ChatClient 빈, 템플릿 파라미터 바인딩
 
 ext {
-    // Spring AI BOM — 모듈 버전을 한 번에 맞춘다. 올릴 때는 이 한 줄만 바꾼다.
     springAiVersion = '1.1.8'
 }
 
 dependencies {
-    // ── 웹 · 문서 ──────────────────────────────────────────────
+    // ── 웹  문서 ──────────────────────────────────────────────
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'    // /swagger-ui.html
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'                  // /actuator/prometheus
 
-    // ── 영속성 (JPA · H2) ─────────────────────────────────────
+    // ── 영속성 (JPA  H2) ─────────────────────────────────────
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.h2database:h2'
 
@@ -70,7 +66,6 @@ tasks.named('compileJava') { dependsOn 'spotlessApply' }
 
 tasks.named('test') {
     useJUnitPlatform {
-        // 실제 OpenAI 호출이 필요한 평가는 명시적으로 요청할 때만 실행한다.
         if (!project.hasProperty('eval')) {
             excludeTags 'eval'
         }
@@ -80,7 +75,6 @@ tasks.named('test') {
         showStandardStreams = project.hasProperty('eval')
     }
     if (project.hasProperty('eval')) {
-        // 환경 변수만 바꾼 연속 실험도 UP-TO-DATE로 건너뛰지 않는다.
         outputs.upToDateWhen { false }
     }
 }

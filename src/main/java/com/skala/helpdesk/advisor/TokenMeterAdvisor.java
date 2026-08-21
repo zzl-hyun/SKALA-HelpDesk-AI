@@ -14,9 +14,8 @@ import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.stereotype.Component;
 
 /**
- * order 900 — 가장 안쪽. 실제로 모델까지 다녀온 뒤의 진짜 토큰·지연을 재야 하니까 맨 마지막에 둔다. before/after가 같은 스레드에서 순서대로 실행되는
- * 동기 호출(.call())을 전제로 ThreadLocal로 시작 시각을 넘긴다. 스트리밍(.stream())은 이 방식으로 못 잰다 — 별도 StreamAdvisor가
- * 필요하다.
+ * order 900
+
  */
 @Component
 public class TokenMeterAdvisor implements BaseAdvisor {
@@ -66,7 +65,7 @@ public class TokenMeterAdvisor implements BaseAdvisor {
             }
 
             log.info(
-                    "[{}] 응답 {}초 · 프롬프트 {} · 완성 {} 토큰",
+                    "[{}] 응답 {}초  프롬프트 {}  완성 {} 토큰",
                     MDC.get(HelpDeskService.TRACE_ID),
                     String.format("%.1f", elapsedSeconds),
                     promptTokens,

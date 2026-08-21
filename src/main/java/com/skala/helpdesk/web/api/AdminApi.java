@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** 관리자 API의 HTTP 매핑과 OpenAPI 문서 계약. */
-@Tag(name = "HelpDesk · 관리자")
+@Tag(name = "관리자 API")
 @RequestMapping("/api/admin")
 public interface AdminApi {
 

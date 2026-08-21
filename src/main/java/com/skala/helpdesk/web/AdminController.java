@@ -13,10 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- * 담당자·운영자가 직접 쓰는 경로 — 어떤 Tool에도 등록되지 않으므로 모델은 이 클래스에 닿지 못한다. (이 프로젝트엔 아직 인증이 없어서 @PreAuthorize는 못
- * 붙였다 — 실제 서비스라면 관리자 인증이 반드시 있어야 한다.)
- */
 @Slf4j
 @RestController
 public class AdminController implements AdminApi {
