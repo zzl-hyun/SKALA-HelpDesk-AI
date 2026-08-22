@@ -20,16 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * 2장 — ChatClient 빈을 용도별로 나눠 만든다.
- *
- * <p>하나의 ChatClient 로 모든 일을 시키면 기본값이 서로 충돌한다. 추출은 흔들리면 안 되고(temperature 0), 상담은 자연스러워야 한다(0.7). 용도별
- * 빈으로 나누면 호출부가 옵션을 매번 덮어쓸 필요가 없다.
- */
 @Configuration
 public class AiConfig {
 
-//     분류 및 추출
     @Bean
     public ChatClient extractClient(ChatClient.Builder builder) {
         return builder.defaultSystem(
@@ -42,7 +35,6 @@ public class AiConfig {
                 .build();
     }
 
-//     챗봇
     @Bean
     public ChatClient supportClient(ChatClient.Builder builder) {
         return builder.defaultSystem(
@@ -55,7 +47,6 @@ public class AiConfig {
                 .build();
     }
 
-//     대화 컨텍스트
     @Bean
     public ChatMemoryRepository chatMemoryRepository() {
         return new InMemoryChatMemoryRepository();
@@ -71,7 +62,6 @@ public class AiConfig {
                 .build();
     }
 
-//     Advisor
     @Bean
     public ChatClient helpDeskChatClient(
             ChatClient.Builder builder,
@@ -97,11 +87,9 @@ public class AiConfig {
                                                 - 질문이 애매하면(예: 주문번호가 없으면) 되묻는다.
                                                 - 존댓말을 쓰고 간결하게 답한다.""")
                 .defaultAdvisors(
-                        auditAdvisor, // order 0   가장 바깥
-                        safetyAdvisor, // order 100 차단
-                        MessageChatMemoryAdvisor.builder(chatMemory)
-                                .order(200)
-                                .build(), // order 200 기억
+                        auditAdvisor, // 가장 바깥
+                        safetyAdvisor, // 차단
+                        MessageChatMemoryAdvisor.builder(chatMemory).order(200).build(), // 대화 기억
                         QuestionAnswerAdvisor.builder(vectorStore)
                                 .order(300) // 근거 검색
                                 .searchRequest(
@@ -110,7 +98,7 @@ public class AiConfig {
                                                 .similarityThreshold(ragThreshold)
                                                 .build())
                                 .build(),
-                        tokenMeterAdvisor, // order 900 계측
+                        tokenMeterAdvisor, // metric
                         new SimpleLoggerAdvisor())
                 .defaultTools(orderTools, ticketTools)
                 .build();

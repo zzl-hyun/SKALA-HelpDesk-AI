@@ -35,12 +35,6 @@ public class IngestService {
         this.minChunkSizeChars = minChunkSizeChars;
     }
 
-    /**
-     * 실습용 정책 문서 세 개를 한 번에 다시 색인한다.
-     *
-     * <p>각 문서는 {@link #ingest(Resource, String, String)} 안에서 같은 source의 기존 청크를 먼저 지우므로, 이 API를 반복
-     * 호출해도 중복이 쌓이지 않는다.
-     */
     public List<IngestResult> ingestDefaultDocuments() {
         return DEFAULT_DOCUMENTS.stream()
                 .map(
@@ -57,7 +51,6 @@ public class IngestService {
         var reader = new TextReader(doc);
         List<Document> documents = reader.get();
 
-        // TextReader#get()이 source를 파일명으로 덮어쓰므로 읽은 다음 고정한다.
         documents.forEach(
                 document -> {
                     document.getMetadata().put("source", source);

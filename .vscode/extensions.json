@@ -1,7 +1,8 @@
 {
-  // VS Code 로 이 폴더를 열면 "권장 확장 설치" 알림이 뜬다 — 전부 설치하면 준비 끝이다.
   "recommendations": [
     "vscjava.vscode-java-pack",
+    "vscjava.vscode-gradle",
+    "richardwillis.vscode-spotless-gradle",
     "vmware.vscode-boot-dev-pack",
     "humao.rest-client",
     "editorconfig.editorconfig",

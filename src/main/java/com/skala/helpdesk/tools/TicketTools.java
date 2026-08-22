@@ -18,6 +18,16 @@ import org.springframework.stereotype.Component;
 public class TicketTools {
 
     private static final Logger log = LoggerFactory.getLogger("METRICS");
+    private static final String REQUEST_REFUND_DESCRIPTION =
+            """
+                환불을 접수한다. 사용자가 환불 및 반품교환을 요청하면 이 도구를 호출한다.
+                즉시 처리되지 않고 담당자 승인 후 처리된다 — 가능/불가 여부를 네가 미리 판단해서 거절하지 않는다.
+                """;
+    private static final String ORDER_ID_DESCRIPTION =
+            "주문번호. 대화에서 이미 조회했던 주문번호가 있으면 그걸 그대로 쓴다. 예: 12345";
+    private static final String REFUND_REASON_DESCRIPTION =
+            "환불 사유. 사용자가 말한 표현을 그대로 옮긴다. 예: '단순 변심', '사이즈가 안 맞음'. "
+                    + "사용자가 사유를 전혀 언급하지 않았을 때만 되물어라.";
 
     private final OrderRepository orderRepository;
     private final TicketRepository ticketRepository;
@@ -32,20 +42,10 @@ public class TicketTools {
         this.registry = registry;
     }
 
-    @Tool(
-            description =
-                    """
-            환불을 접수한다. 사용자가 환불 및 반품교환을 요청하면 이 도구를 호출한다.
-            즉시 처리되지 않고 담당자 승인 후 처리된다 — 가능/불가 여부를 네가 미리 판단해서 거절하지 않는다.
-            """)
+    @Tool(description = REQUEST_REFUND_DESCRIPTION)
     public String requestRefund(
-            @ToolParam(description = "주문번호. 대화에서 이미 조회했던 주문번호가 있으면 그걸 그대로 쓴다. 예: 12345")
-                    String orderId,
-            @ToolParam(
-                            description =
-                                    "환불 사유. 사용자가 말한 표현을 그대로 옮긴다. 예: '단순 변심', '사이즈가 안 맞음'. "
-                                            + "사용자가 사유를 전혀 언급하지 않았을 때만 되물어라.")
-                    String reason,
+            @ToolParam(description = ORDER_ID_DESCRIPTION) String orderId,
+            @ToolParam(description = REFUND_REASON_DESCRIPTION) String reason,
             ToolContext ctx) {
 
         String userId = (String) ctx.getContext().get("userId");

@@ -23,11 +23,8 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    protected Ticket() {
-        // JPA
-    }
+    protected Ticket() {}
 
-    /** 새 티켓은 항상 PENDING으로 시작한다 — 승인은 별도 경로에서만 일어난다. */
     public Ticket(String orderId, String userId, String reason) {
         this.orderId = orderId;
         this.userId = userId;
@@ -57,5 +54,9 @@ public class Ticket {
 
     public void approve() {
         this.status = TicketStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = TicketStatus.REJECTED;
     }
 }

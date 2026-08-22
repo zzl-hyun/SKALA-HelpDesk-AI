@@ -1,4 +1,3 @@
-# 편집기가 달라도 서식이 흔들리지 않게 — VS Code 는 EditorConfig 확장이 이 파일을 읽는다.
 root = true
 
 [*]

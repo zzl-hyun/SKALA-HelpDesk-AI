@@ -25,10 +25,10 @@ public interface AdminApi {
     Ticket approve(@PathVariable Long id);
 
     @PostMapping("/ingest")
-    @Operation(summary = "정책 문서 다시 색인", description = "같은 source의 기존 청크를 지운 뒤 문서를 다시 저장합니다.")
+    @Operation(summary = "정책 문서 다시 색인", description = "같은 source의 기존 청크를 지운 뒤 문서를 다시 저장한다.")
     List<IngestResult> ingest();
 
     @GetMapping("/chunks")
-    @Operation(summary = "검색 결과와 유사도 확인", description = "무엇이 검색되는지 확인한다.")
+    @Operation(summary = "검색 결과와 유사도 확인", description = "무엇이 검색되는지 확인한ㄷ.")
     List<SearchResult> chunks(@RequestParam String q, @RequestParam(required = false) Integer topK);
 }

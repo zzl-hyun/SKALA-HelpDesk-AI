@@ -8,10 +8,6 @@ import org.springframework.ai.chat.client.advisor.api.AdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.stereotype.Component;
 
-/**
- * order 100 — 메모리(200)에 저장되기 전에 차단해야 한다. 여기서 걸러진 입력은 대화 이력에 남지 않는다. 차단은 코드로 강제한다(프롬프트로 "하지 마"라고
- * 부탁하지 않는다).
- */
 @Component
 public class SafetyAdvisor implements BaseAdvisor {
 

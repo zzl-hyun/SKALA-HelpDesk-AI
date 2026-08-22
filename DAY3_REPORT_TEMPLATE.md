@@ -1,4 +1,4 @@
-# SKALA HelpDesk AI 실행·테스트 보고서
+# SKALA HelpDesk AI 실행테스트 보고서
 
 ## 표지
 
@@ -14,7 +14,7 @@
 
 ### 1.1 목표
 
-사내 정책 문서를 검색하는 RAG, 주문·환불 Tool, 멀티턴 메모리, 안전 Advisor와 관찰
+사내 정책 문서를 검색하는 RAG, 주문환불 Tool, 멀티턴 메모리, 안전 Advisor와 관찰
 지표를 하나의 상담 API로 결합했다.
 
 ### 1.2 주요 기능
@@ -22,9 +22,9 @@
 - 정책 문서 기반 답변과 출처 표시
 - 소유자 조건을 적용한 주문 상태 조회
 - 담당자 승인 전 `PENDING` 상태로만 남는 환불 접수
-- 사용자·세션별 대화 메모리
-- 인젝션·민감 정보·초장문 입력 차단
-- 감사 로그 및 토큰·지연·Tool 호출 메트릭
+- 사용자세션별 대화 메모리
+- 인젝션민감 정보초장문 입력 차단
+- 감사 로그 및 토큰지연Tool 호출 메트릭
 
 ## 2. 개발 및 실행 환경
 
@@ -43,13 +43,13 @@
 ```text
 com.skala.helpdesk
 ├── advisor/    AuditAdvisor, SafetyAdvisor, TokenMeterAdvisor
-├── chat/       HelpDeskService, AnswerDto
+├── api/        기능별 request/response/apispec/controller
 ├── config/     AiConfig, DataSeeder, VectorStoreConfig
 ├── domain/     Order, Ticket, 상태 Enum
 ├── rag/        IngestService, RetrievalService
 ├── repository/ OrderRepository, TicketRepository
 ├── tools/      OrderTools, TicketTools
-└── web/        Controller와 API 인터페이스
+└── service/    HelpDeskService
 ```
 
 설명:
@@ -122,7 +122,7 @@ com.skala.helpdesk
 - 관찰 결과:
 - 판정:
 
-### 4.9 토큰·지연·Tool 메트릭
+### 4.9 토큰지연Tool 메트릭
 
 [09_metrics.png 삽입]
 
@@ -156,7 +156,7 @@ com.skala.helpdesk
 | 1 | Tool 호출 |  | 04 |
 | 2 | 권한 격리 |  | 05 |
 | 3 | 승인 게이트 |  | 07 |
-| 4 | RAG 결합·출처 |  | 03 |
+| 4 | RAG 결합출처 |  | 03 |
 | 5 | 멀티턴 |  | 06 |
 | 6 | Advisor 순서 |  | 08 |
 | 7 | 감사 로그 |  | 04 |
@@ -169,7 +169,7 @@ PDF 기준인 7개 이상 충족 여부: `[충족 / 미충족]`
 
 ## 7. 한계와 개선 방향
 
-### 7.1 인증·인가
+### 7.1 인증인가
 
 현재 요청 본문의 `userId`를 사용한다. 프롬프트 내부 ID 주입은 차단하지만 클라이언트가
 다른 `userId`를 직접 보내는 문제는 막지 못한다. Spring Security와 인증 `Principal`을

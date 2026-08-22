@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        // Maven Central 이 429(Too Many Requests)를 내릴 때를 대비해 구글 미러를 우선 시도
         maven { url 'https://maven-central.storage-download.googleapis.com/maven2/' }
         gradlePluginPortal()
         mavenCentral()

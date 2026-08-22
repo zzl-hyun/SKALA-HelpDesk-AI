@@ -26,11 +26,7 @@ public class OrderTools {
         this.registry = registry;
     }
 
-    @Tool(
-            description =
-                    """
-            주문 상태를 조회한다. 사용자가 주문번호를 말하거나 '내 주문', '배송 언제' 처럼 물으면 이 도구를 쓴다.
-            """)
+    @Tool(description = "주문 상태를 조회한다. 사용자가 주문번호를 말하거나 '내 주문', '배송, 언제' 처럼 물으면 이 도구를 쓴다.")
     public Order getOrder(@ToolParam(description = "주문 ID") String orderId, ToolContext ctx) {
 
         String userId = (String) ctx.getContext().get("userId");

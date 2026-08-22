@@ -26,13 +26,11 @@ public class HelpDeskService {
         this.helpDeskChatClient = helpDeskChatClient;
     }
 
-    /** 대화 ID 규칙은 서비스에서만 관리한다. */
     public static String conversationId(String userId, String sessionId) {
         String session = (sessionId == null || sessionId.isBlank()) ? "default" : sessionId;
         return "%s:%s".formatted(userId, session);
     }
 
-    /** advisor들이 같은 요청을 묶어 로그를 남길 때 사용하는 MDC 키. */
     public static final String TRACE_ID = "traceId";
 
     public AnswerDto chat(String question, String userId, String sessionId) {

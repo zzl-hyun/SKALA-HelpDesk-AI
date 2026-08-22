@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/** 애플리케이션 예외를 일관된 HTTP 응답으로 변환한다. */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

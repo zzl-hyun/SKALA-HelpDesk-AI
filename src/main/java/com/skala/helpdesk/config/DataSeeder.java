@@ -7,10 +7,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * 실습용 씨딩 — data.sql 대신 JPA로 직접 넣는다. data.sql은 Hibernate의 스키마 생성(ddl-auto=create-drop) 타이밍과 경쟁해서
- * "컬럼을 찾을 수 없다" 에러가 났다 — CommandLineRunner는 컨텍스트가 다 뜬 뒤에 실행되니 안전하다.
- */
 @Configuration
 public class DataSeeder {
 

@@ -13,7 +13,6 @@ import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.stereotype.Component;
 
-/** order 900 */
 @Component
 public class TokenMeterAdvisor implements BaseAdvisor {
 

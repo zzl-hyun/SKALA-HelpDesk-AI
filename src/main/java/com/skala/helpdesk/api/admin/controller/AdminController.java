@@ -47,15 +47,15 @@ public class AdminController implements AdminApi {
 
     @Override
     public List<IngestResult> ingest() {
-        log.info("Starting document ingestion");
+        log.info("문서 인제스팅 시작");
         var result = ingestService.ingestDefaultDocuments();
-        log.info("Document ingestion completed. processedCount={}", result.size());
+        log.info("문서 인제스팅 완료 processedCount={}", result.size());
         return result;
     }
 
     @Override
     public List<SearchResult> chunks(String q, Integer topK) {
-        log.info("Chunk inspect requested. query={}, topK={}", q, topK);
+        log.info("청크 인스펙트 요청 query={}, topK={}", q, topK);
         try {
             var chunks =
                     topK == null
